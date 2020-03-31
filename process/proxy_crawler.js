@@ -163,8 +163,8 @@ function run(connection) {
 function check(connection) {
   return new Promise(async function(resolve) {
     const [proxies] = await getProxyUrls(connection);
-    await checkProxyUrlsAvailable(connection, proxies);
-    resolve();
+    const count = await checkProxyUrlsAvailable(connection, proxies);
+    resolve(count);
   });
 }
 
