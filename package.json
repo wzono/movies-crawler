@@ -1,0 +1,35 @@
+{
+  "name": "movies-crawler",
+  "version": "1.0.0",
+  "description": "豆瓣、imdb电影爬虫，主要爬取电影信息以及评论",
+  "main": "index.js",
+  "scripts": {
+    "proxy": "node ./process/proxy_crawler.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wingsico/movies-crawler.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wingsico/movies-crawler/issues"
+  },
+  "homepage": "https://github.com/wingsico/movies-crawler#readme",
+  "dependencies": {
+    "async": "^3.2.0",
+    "cheerio": "^1.0.0-rc.3",
+    "crawler": "^1.2.1",
+    "jsonfile": "^6.0.1",
+    "mysql": "^2.18.1",
+    "mysql2": "^2.1.0",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.5",
+    "superagent": "^5.2.2",
+    "superagent-charset": "^1.2.0",
+    "superagent-proxy": "^2.0.0",
+    "superagent-retry": "^0.6.0",
+    "superagent-retry-delay": "^2.2.4"
+  }
+}
