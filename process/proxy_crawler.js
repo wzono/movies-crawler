@@ -10,6 +10,8 @@ const request = require("request-promise");
 
 const { PROXY_URL } = config;
 
+const NEED_PROXY_COUNT = 50;
+
 function createCralwerUrls() {
   return makeArray(1, 20).map(page => {
     const cralwerUrl = url.resolve(PROXY_URL, `${page}`);
@@ -84,11 +86,9 @@ function checkProxyUrlAvailable(proxy) {
       }
     })
       .then(() => {
-        console.log(`[有效]: ${proxy.ip}`);
         resolve();
       })
       .catch(async () => {
-        console.log(`[无效]: ${proxy.ip}`);
         reject();
       });
   });
@@ -96,8 +96,10 @@ function checkProxyUrlAvailable(proxy) {
 
 function checkProxyUrlsAvailable(connection, proxies) {
   return new Promise(async resolve => {
+    let count = 0;
     const checkQueue = Async.queue(function(proxy, callback) {
       checkProxyUrlAvailable(proxy)
+        .then(() => count++)
         .catch(async () => {
           await deleteProxyUrl(connection, proxy.ip);
         })
@@ -107,7 +109,7 @@ function checkProxyUrlsAvailable(connection, proxies) {
     checkQueue.push(proxies);
 
     checkQueue.drain(function() {
-      resolve();
+      resolve(count);
     });
   });
 }
@@ -169,10 +171,13 @@ function check(connection) {
 async function main() {
   const connection = await mysql.createConnection(dbConfig);
   const res = await createProxyTable(connection);
+  let count = await check(connection);
+  if (count < NEED_PROXY_COUNT) {
+    await getProxyUrlsByApi(connection);
+    count = await check(connection);
+  }
   // await run(connection);
-  await getProxyUrlsByApi(connection);
-  await check(connection);
-
+  console.log(`共有 ${count} 个有效代理IP`);
   connection.end();
 }
 
