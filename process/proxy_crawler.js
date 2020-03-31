@@ -17,9 +17,15 @@ function createCralwerUrls() {
   });
 }
 
+function createProxyApis() {
+  return makeArray(1, 5).map(page => {
+    return `${PROXY_URL}?page=${page}`;
+  });
+}
+
 function createProxyTable(connection) {
   return connection.execute(
-    "CREATE TABLE if not exists proxy(ip char(15), port char(15), type char(15))"
+    "CREATE TABLE if not exists proxy(ip char(15), port char(15), type char(15), primary key(ip))"
   );
 }
 
@@ -56,7 +62,7 @@ function formatSQLParams(data = []) {
   return data.map(({ ip, port, type }) => [ip, port, type]);
 }
 
-async function handleProxyUrl(connection, { res, done }) {
+function handleProxyUrl(connection, { res, done }) {
   const formatData = formatSQLParams(resolvePageData(res.$));
   if (formatData.length === 0) {
     return done();
@@ -106,6 +112,31 @@ function checkProxyUrlsAvailable(connection, proxies) {
   });
 }
 
+function getProxyUrlsByApi(connection) {
+  return new Promise(function(resolve, reject) {
+    const urls = createProxyApis();
+    const queue = Async.queue(function(url, callback) {
+      request(url)
+        .then(res => {
+          const { data } = JSON.parse(res);
+          const proxies = data.data.map(proxy => ({
+            ip: proxy.ip,
+            port: proxy.port,
+            type: proxy.protocol
+          }));
+          return insertProxyUrls(connection, formatSQLParams(proxies));
+        })
+        .catch(console.error)
+        .finally(callback);
+    }, 3);
+    queue.push(urls);
+
+    queue.drain(function() {
+      resolve();
+    });
+  });
+}
+
 function run(connection) {
   return new Promise(async function(resolve) {
     const crawlerUrls = createCralwerUrls();
@@ -138,8 +169,10 @@ function check(connection) {
 async function main() {
   const connection = await mysql.createConnection(dbConfig);
   const res = await createProxyTable(connection);
-  await run(connection);
+  // await run(connection);
+  await getProxyUrlsByApi(connection);
   await check(connection);
+
   connection.end();
 }
 

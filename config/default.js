@@ -25,5 +25,6 @@ module.exports = {
   ],
   DEFAULT_TAG: "电影",
   BASE_URL: "https://movie.douban.com/j/new_search_subjects?sort=U&range=0,10",
-  PROXY_URL: "https://www.kuaidaili.com/free/inha/"
+  // PROXY_URL: "https://www.kuaidaili.com/free/inha/",
+  PROXY_URL: "https://ip.jiangxianli.com/api/proxy_ips"
 };
