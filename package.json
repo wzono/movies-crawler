@@ -4,7 +4,8 @@
   "description": "豆瓣、imdb电影爬虫，主要爬取电影信息以及评论",
   "main": "index.js",
   "scripts": {
-    "proxy": "node ./process/proxy_crawler.js"
+    "proxy": "node ./process/proxy_crawler.js",
+    "guard": "node ./process/proxy_server_guard.js"
   },
   "repository": {
     "type": "git",
@@ -21,9 +22,11 @@
     "async": "^3.2.0",
     "cheerio": "^1.0.0-rc.3",
     "crawler": "^1.2.1",
+    "debounce-promise": "^3.1.2",
     "jsonfile": "^6.0.1",
     "mysql": "^2.18.1",
     "mysql2": "^2.1.0",
+    "p-throttle": "^3.1.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.5",
     "superagent": "^5.2.2",
