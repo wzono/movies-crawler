@@ -23,8 +23,10 @@ module.exports = {
     "武侠",
     "情色"
   ],
-  DEFAULT_TAG: "电影",
-  BASE_URL: "https://movie.douban.com/j/new_search_subjects?sort=U&range=0,10",
+  BASE_URL: `https://movie.douban.com/j/new_search_subjects?sort=U&range=0,10&limit=80&tags=${encodeURIComponent(
+    "电影"
+  )}`,
   // PROXY_URL: "https://www.kuaidaili.com/free/inha/",
-  PROXY_URL: "https://ip.jiangxianli.com/api/proxy_ips"
+  PROXY_URL: "https://ip.jiangxianli.com/api/proxy_ips",
+  NODE_API: "http://localhost:9528"
 };
