@@ -88,7 +88,7 @@ function checkProxyUrlAvailable(proxy) {
       .then(() => {
         resolve();
       })
-      .catch(async () => {
+      .catch(() => {
         reject();
       });
   });
