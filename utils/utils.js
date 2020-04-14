@@ -1,4 +1,5 @@
-const getOne = require("./get_one");
+const net = require("net");
+const mysql = require("mysql2/promise");
 const USER_AGENTS = [
   "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; AcooBrowser; .NET CLR 1.1.4322; .NET CLR 2.0.50727)",
   "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; Acoo Browser; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.04506)",
@@ -36,6 +37,97 @@ const USER_AGENTS = [
   "Mozilla/5.0 (X11; U; Linux x86_64; zh-CN; rv:1.9.2.10) Gecko/20100922 Ubuntu/10.10 (maverick) Firefox/3.6.10"
 ];
 
-module.exports = function getUserAgent() {
+function getOne(array) {
+  return array[parseInt(Math.random() * array.length, 10)];
+}
+
+function getUserAgent() {
   return getOne(USER_AGENTS);
+}
+
+function isPortOccupied(port) {
+  const server = net.createServer().listen(port, "localhost");
+  return new Promise(resolve => {
+    server.on("listening", () => {
+      server.close();
+      resolve(false);
+    });
+
+    server.on("error", err => {
+      resolve(true);
+    });
+  });
+}
+
+function makeArray(start = 0, end = 10, step = 1) {
+  const arr = [];
+  for (let i = start; i <= end; i += step) {
+    arr.push(i);
+  }
+  return arr;
+}
+
+function getRandomString(length = 10) {
+  const charset =
+    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  return new Array(length)
+    .fill(1)
+    .map(() => getOne(charset))
+    .join("");
+}
+
+function isIPaborted($) {
+  return !$("#comments-section .mod-hd h2 i").text();
+}
+
+function random(min, max) {
+  return Math.round(Math.random() * (max - min)) + min;
+}
+
+function shuffle(array) {
+  var m = array.length,
+    t,
+    i;
+  while (m) {
+    i = Math.floor(Math.random() * m--);
+    t = array[m];
+    array[m] = array[i];
+    array[i] = t;
+  }
+  return array;
+}
+
+function gen(obj) {
+  const [keys, values] = Object.entries(obj).reduce(
+    (acc, cur) => {
+      const [key, value] = cur;
+      acc[0].push(key);
+      acc[1].push(value);
+      return acc;
+    },
+    [[], []]
+  );
+  return [keys.join(","), values];
+}
+
+function genWhere(obj) {
+  return Object.entries(obj)
+    .map(kv => {
+      const [k, v] = kv;
+      return `\`${k}\` = ${mysql.escape(v)}`;
+    })
+    .join(" AND ");
+}
+
+module.exports = {
+  random,
+  shuffle,
+  makeArray,
+  getRandomString,
+  isPortOccupied,
+  getUserAgent,
+  getOne,
+  gen,
+  genWhere,
+  isIPaborted
 };

@@ -1,12 +1,14 @@
 const dbConfig = require("../config/db");
-const { BASE_URL, TAGS, NODE_API } = require("../config/default");
+const {
+  BASE_URL,
+  TAGS,
+  NODE_API,
+  MOVIE_ID_TABLE
+} = require("../config/default");
 const Async = require("async");
 const mysql = require("mysql2/promise");
 const request = require("request-promise");
-const getUserAgent = require("../utils/get_user_agent");
-const getOne = require("../utils/get_one");
-const random = require("../utils/random");
-const shuffle = require("../utils/shuffle");
+const { getUserAgent, getOne, random, shuffle } = require("../utils/utils.js");
 const pThrottle = require("p-throttle");
 
 let ssrNodeIds = []; // 代理池
@@ -20,15 +22,15 @@ function createCralwerUrls() {
   }, {});
 }
 
-function createProxyTable(connection) {
+function createMovieIdTable(connection) {
   return connection.execute(
-    "CREATE TABLE if not exists movie_ids(id char(15), title varchar(10), primary key(id))"
+    `CREATE TABLE if not exists ${MOVIE_ID_TABLE}(id char(15), title text, primary key(id))`
   );
 }
 
 function insertMovieIds(connection, data = []) {
   return connection.query(
-    "INSERT ignore INTO `movie_ids` (id, title) VALUES ?",
+    `INSERT ignore INTO ${MOVIE_ID_TABLE} (id, title) VALUES ?`,
     [data]
   );
 }
@@ -181,7 +183,7 @@ function toggleSSRNode(nodeId) {
 async function main() {
   const connection = await mysql.createConnection(dbConfig);
   try {
-    await createProxyTable(connection);
+    await createMovieIdTable(connection);
     cralwerUrls = createCralwerUrls();
     ssrNodeIds = await getSSRNodeIds();
     // await fetchProxies(connection);

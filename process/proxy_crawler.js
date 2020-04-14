@@ -1,7 +1,6 @@
 const config = require("../config/default");
 const dbConfig = require("../config/db");
-const makeArray = require("../utils/make_array");
-const getUserAgent = require("../utils/get_user_agent");
+const { getUserAgent, makeArray } = require("../utils/utils.js");
 const url = require("url");
 const Crawler = require("crawler");
 const Async = require("async");
@@ -64,15 +63,15 @@ function formatSQLParams(data = []) {
   return data.map(({ ip, port, type }) => [ip, port, type]);
 }
 
-function handleProxyUrl(connection, { res, done }) {
-  const formatData = formatSQLParams(resolvePageData(res.$));
-  if (formatData.length === 0) {
-    return done();
-  }
-  insertProxyUrls(connection, formatData)
-    .catch(err => console.error(err.message))
-    .finally(done);
-}
+// function handleProxyUrl(connection, { res, done }) {
+//   const formatData = formatSQLParams(resolvePageData(res.$));
+//   if (formatData.length === 0) {
+//     return done();
+//   }
+//   insertProxyUrls(connection, formatData)
+//     .catch(err => console.error(err.message))
+//     .finally(done);
+// }
 
 function checkProxyUrlAvailable(proxy) {
   return new Promise((resolve, reject) => {
@@ -139,26 +138,26 @@ function getProxyUrlsByApi(connection) {
   });
 }
 
-function run(connection) {
-  return new Promise(async function(resolve) {
-    const crawlerUrls = createCralwerUrls();
-    const crawler = new Crawler({
-      userAgent: getUserAgent(),
-      maxConnections: 10,
-      jQuery: "cheerio",
-      callback(error, res, done) {
-        if (error) {
-          return console.error(error);
-        }
-        handleProxyUrl(connection, { res, done });
-      }
-    });
-    crawler.queue(crawlerUrls);
-    crawler.on("drain", function() {
-      resolve();
-    });
-  });
-}
+// function run(connection) {
+//   return new Promise(async function(resolve) {
+//     const crawlerUrls = createCralwerUrls();
+//     const crawler = new Crawler({
+//       userAgent: getUserAgent(),
+//       maxConnections: 10,
+//       jQuery: "cheerio",
+//       callback(error, res, done) {
+//         if (error) {
+//           return console.error(error);
+//         }
+//         handleProxyUrl(connection, { res, done });
+//       }
+//     });
+//     crawler.queue(crawlerUrls);
+//     crawler.on("drain", function() {
+//       resolve();
+//     });
+//   });
+// }
 
 function check(connection) {
   return new Promise(async function(resolve) {
