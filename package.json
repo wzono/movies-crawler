@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/wingsico/movies-crawler#readme",
   "dependencies": {
-    "async": "^3.2.0",
+    "async": "^3.2.2",
     "cheerio": "^1.0.0-rc.3",
     "crawler": "^1.2.1",
     "dateformat": "^3.0.3",
